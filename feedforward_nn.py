@@ -18,7 +18,7 @@ x = tf.placeholder('float')
 y = tf.placeholder('float')
 
 def create_data():
-    url = "https://www.quandl.com/api/v3/datasets/CHRIS/CME_CL1.csv"
+    url = "CME_CL1.csv"
     crude_oil = pd.read_csv(url, index_col=0, parse_dates=True)
     crude_oil.sort_index(inplace=True)
     crude_oil_last = crude_oil['Last']
@@ -37,7 +37,7 @@ def create_data():
     return oil_price, stock_price
 
 def neural_network_model(data):
-    hidden_1_layer = {'weights':tf.Variable(tf.random_normal([784, n_nodes_hl1])),
+    hidden_1_layer = {'weights':tf.Variable(tf.random_normal([1, n_nodes_hl1])),
                       'biases':tf.Variable(tf.random_normal([n_nodes_hl1]))}
 
     hidden_2_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl1, n_nodes_hl2])),
@@ -48,7 +48,6 @@ def neural_network_model(data):
 
     output_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl3, n_classes])),
                     'biases':tf.Variable(tf.random_normal([n_classes])),}
-
 
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
     l1 = tf.nn.relu(l1)
@@ -82,8 +81,8 @@ def train_neural_network(x):
         for epoch in range(hm_epochs):
             epoch_loss = 0
             for _ in range(int(len(oil_price)/batch_size)):
-                epoch_x = oil_price[_*batch_size:(_+1)*batch_size]
-                epoch_y = stock_price[_*batch_size:(_+1)*batch_size]
+                epoch_x = oil_price[_*batch_size:(_+1)*batch_size].values
+                epoch_y = stock_price[_*batch_size:(_+1)*batch_size].values
                 _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
                 epoch_loss += c
 
@@ -95,3 +94,4 @@ def train_neural_network(x):
         #print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
 
 train_neural_network(x)
+
