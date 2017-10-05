@@ -11,7 +11,7 @@ n_nodes_hl1 = 500
 n_nodes_hl2 = 500
 n_nodes_hl3 = 500
 
-n_classes = 10
+n_classes = 1
 batch_size = 100
 
 x = tf.placeholder('float')
@@ -34,7 +34,16 @@ def create_data():
     stock_close = df['Close']
 
     oil_price, stock_price = crude_oil_last.align(stock_close, join='inner')
-    return oil_price, stock_price
+
+    split_index = int(3*len(oil_price)/4)
+    print(type(oil_price))
+    oil_train = oil_price.iloc[:split_index]
+    stock_train = oil_price.iloc[:split_index]
+
+    oil_test = oil_price.iloc[split_index:]
+    stock_test = oil_price.iloc[split_index:]
+
+    return oil_train, stock_train, oil_test, stock_test
 
 def neural_network_model(data):
     hidden_1_layer = {'weights':tf.Variable(tf.random_normal([1, n_nodes_hl1])),
@@ -58,40 +67,37 @@ def neural_network_model(data):
     l3 = tf.add(tf.matmul(l2,hidden_3_layer['weights']), hidden_3_layer['biases'])
     l3 = tf.nn.relu(l3)
 
-    output = tf.matmul(l3,output_layer['weights']) + output_layer['biases']
+    output = tf.add(tf.matmul(l3,output_layer['weights']),
+            output_layer['biases'])
 
     return output
 
 def train_neural_network(x):
     prediction = neural_network_model(x)
-    # OLD VERSION:
-    #cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(prediction,y) )
-    # NEW:
-    cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
+    cost = tf.reduce_mean(tf.square(y-prediction, name="cost") )
     optimizer = tf.train.AdamOptimizer().minimize(cost)
-    oil_price, stock_price = create_data()
+    oil_train, stock_train, oil_test, stock_test = create_data()
 
-    hm_epochs = 10
+    hm_epochs = 30
     with tf.Session() as sess:
-        # OLD:
-        #sess.run(tf.initialize_all_variables())
-        # NEW:
         sess.run(tf.global_variables_initializer())
 
         for epoch in range(hm_epochs):
             epoch_loss = 0
-            for _ in range(int(len(oil_price)/batch_size)):
-                epoch_x = oil_price[_*batch_size:(_+1)*batch_size].values
-                epoch_y = stock_price[_*batch_size:(_+1)*batch_size].values
-                _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
+            for (X,Y) in zip(oil_train.values, stock_train.values):
+                _, c = sess.run([optimizer, cost], feed_dict={x: [[X]], y: [[Y]]})
                 epoch_loss += c
 
             print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
 
-        correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
-
-        accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        #print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
+        correct = tf.subtract(prediction, y)
+        total = 0
+        cor = 0
+        for (X,Y) in zip(oil_test.values, stock_test.values):
+            total += 1
+            if abs(correct.eval({x:[[X]], y:[[Y]]})) < 10:
+                cor += 1
+        print('Accuracy:', cor/total)
 
 train_neural_network(x)
 
