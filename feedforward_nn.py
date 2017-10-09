@@ -78,7 +78,7 @@ def train_neural_network(x):
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     oil_train, stock_train, oil_test, stock_test = create_data()
 
-    hm_epochs = 30
+    hm_epochs = 50
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
@@ -95,7 +95,7 @@ def train_neural_network(x):
         cor = 0
         for (X,Y) in zip(oil_test.values, stock_test.values):
             total += 1
-            if abs(correct.eval({x:[[X]], y:[[Y]]})) < 10:
+            if abs(correct.eval({x:[[X]], y:[[Y]]})) < 5:
                 cor += 1
         print('Accuracy:', cor/total)
 
