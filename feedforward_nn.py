@@ -17,6 +17,13 @@ batch_size = 100
 x = tf.placeholder('float')
 y = tf.placeholder('float')
 
+def add_lag(dataset_1, dataset_2, lag):
+    if lag != 0:
+        dataset_2 = dataset_2[lag:]
+        dataset_1 = dataset_1[:-lag]
+
+    return dataset_1, dataset_2
+
 def create_data():
     url = "CME_CL1.csv"
     crude_oil = pd.read_csv(url, index_col=0, parse_dates=True)
@@ -24,9 +31,9 @@ def create_data():
     crude_oil_last = crude_oil['Last']
 
     param = {
-            'q': 'XOM',
+            'q': 'RDS.A',
             'i': 86400,
-            'x': "NYSEMKT",
+            'x': "NYSEXOM",
             'p': '40Y'
     }
     df = get_price_data(param)
@@ -36,7 +43,6 @@ def create_data():
     oil_price, stock_price = crude_oil_last.align(stock_close, join='inner')
 
     split_index = int(3*len(oil_price)/4)
-    print(type(oil_price))
     oil_train = oil_price.iloc[:split_index]
     stock_train = oil_price.iloc[:split_index]
 
@@ -72,16 +78,42 @@ def neural_network_model(data):
 
     return output
 
+def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
+    prediction = neural_network_model(x)
+    cost = tf.reduce_mean(tf.square(y-prediction, name="cost") )
+    optimizer = tf.train.AdamOptimizer().minimize(cost)
+    #Adding lag
+    all_lag_losses = []
+    lag_range = 30
+    lag_epoch_num = 50
+    for i in range(lag_range):
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            oil_lag, stock_lag = add_lag(oil_train, stock_train, i)
+            for epoch in range(lag_epoch_num):
+                lag_loss = 0
+                for (X,Y) in zip(oil_lag.values, stock_lag.values):
+                    _, c = sess.run([optimizer, cost], feed_dict={x: [[X]], y: [[Y]]})
+                    lag_loss += c
+                print('Lag', i, 'epoch', epoch, 'loss:', lag_loss)
+            all_lag_losses.append(lag_loss)
+    lag = all_lag_losses.index(min(all_lag_losses))
+    oil_train, stock_train = add_lag(oil_train, stock_train, lag)
+    oil_test, stock_test = add_lag(oil_test, stock_test, lag)
+    print("The best lag is:", lag)
+    return oil_train, stock_train, oil_test, stock_test
+
 def train_neural_network(x):
     prediction = neural_network_model(x)
     cost = tf.reduce_mean(tf.square(y-prediction, name="cost") )
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     oil_train, stock_train, oil_test, stock_test = create_data()
 
-    hm_epochs = 50
+    hm_epochs = 400
+    oil_train, stock_train, oil_test, stock_test = refine_input_with_lag(oil_train, stock_train, oil_test, stock_test)
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-
+       #Running neural net
         for epoch in range(hm_epochs):
             epoch_loss = 0
             for (X,Y) in zip(oil_train.values, stock_train.values):
@@ -98,6 +130,4 @@ def train_neural_network(x):
             if abs(correct.eval({x:[[X]], y:[[Y]]})) < 5:
                 cor += 1
         print('Accuracy:', cor/total)
-
 train_neural_network(x)
-
