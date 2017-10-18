@@ -1,0 +1,96 @@
+from scripts import data_process as dp
+import tensorflow as tf
+import datetime
+
+n_nodes_hl1 = 500
+n_nodes_hl2 = 500
+n_nodes_hl3 = 500
+
+n_classes = 1
+batch_size = 100
+
+x = tf.placeholder('float')
+y = tf.placeholder('float')
+
+def neural_network_model(data):
+    hidden_1_layer = {'weights':tf.Variable(tf.random_normal([1, n_nodes_hl1])),
+                      'biases':tf.Variable(tf.random_normal([n_nodes_hl1]))}
+
+    hidden_2_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl1, n_nodes_hl2])),
+                      'biases':tf.Variable(tf.random_normal([n_nodes_hl2]))}
+
+    hidden_3_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl2, n_nodes_hl3])),
+                      'biases':tf.Variable(tf.random_normal([n_nodes_hl3]))}
+
+    output_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl3, n_classes])),
+                    'biases':tf.Variable(tf.random_normal([n_classes])),}
+
+    l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
+    l1 = tf.nn.relu(l1)
+
+    l2 = tf.add(tf.matmul(l1,hidden_2_layer['weights']), hidden_2_layer['biases'])
+    l2 = tf.nn.relu(l2)
+
+    l3 = tf.add(tf.matmul(l2,hidden_3_layer['weights']), hidden_3_layer['biases'])
+    l3 = tf.nn.relu(l3)
+
+    output = tf.add(tf.matmul(l3,output_layer['weights']),
+            output_layer['biases'])
+
+    return output
+
+def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
+    prediction = neural_network_model(x)
+    cost = tf.reduce_mean(tf.square(y-prediction, name="cost") )
+    optimizer = tf.train.AdamOptimizer().minimize(cost)
+    #Adding lag
+    all_lag_losses = []
+    lag_range = 30
+    lag_epoch_num = 50
+    for i in range(lag_range):
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            oil_lag, stock_lag = dp.add_lag(oil_train, stock_train, i)
+            for epoch in range(lag_epoch_num):
+                lag_loss = 0
+                for (X,Y) in zip(oil_lag.values, stock_lag.values):
+                    _, c = sess.run([optimizer, cost], feed_dict={x: [[X]], y: [[Y]]})
+                    lag_loss += c
+                print('Lag', i, 'epoch', epoch, 'loss:', lag_loss)
+            all_lag_losses.append(lag_loss)
+    lag = all_lag_losses.index(min(all_lag_losses))
+    oil_train, stock_train = dp.add_lag(oil_train, stock_train, lag)
+    oil_test, stock_test = dp.add_lag(oil_test, stock_test, lag)
+    print("The best lag is:", lag)
+    return oil_train, stock_train, oil_test, stock_test
+
+def feedforward_neural_network(inputs):
+    prediction = neural_network_model(x)
+    cost = tf.reduce_mean(tf.square(y-prediction, name="cost") )
+    optimizer = tf.train.AdamOptimizer().minimize(cost)
+    oil_train, stock_train, oil_test, stock_test = inputs
+
+    hm_epochs = 400
+    oil_train, stock_train, oil_test, stock_test = refine_input_with_lag(oil_train, stock_train, oil_test, stock_test)
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+       #Running neural net
+        for epoch in range(hm_epochs):
+            epoch_loss = 0
+            for (X,Y) in zip(oil_train.values, stock_train.values):
+                _, c = sess.run([optimizer, cost], feed_dict={x: [[X]], y: [[Y]]})
+                epoch_loss += c
+
+            print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
+
+        correct = tf.subtract(prediction, y)
+        total = 0
+        cor = 0
+        for (X,Y) in zip(oil_test.values, stock_test.values):
+            total += 1
+            if abs(correct.eval({x:[[X]], y:[[Y]]})) < 5:
+                cor += 1
+        print('Accuracy:', cor/total)
+
+if __name__ == "__main__":
+    feedforward_neural_network(x)
