@@ -25,7 +25,7 @@ def add_lag(dataset_1, dataset_2, lag):
     return dataset_1, dataset_2
 
 def create_data():
-    url = "data/CME_CL1.csv"
+    url = "CME_CL1.csv"
     crude_oil = pd.read_csv(url, index_col=0, parse_dates=True)
     crude_oil.sort_index(inplace=True)
     crude_oil_last = crude_oil['Last']
