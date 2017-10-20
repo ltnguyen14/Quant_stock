@@ -94,14 +94,20 @@ class TestStrategy(bt.Strategy):
                 # Keep track of the created order to avoid a 2nd order
                 self.order = self.sell()
 
-cerebro = bt.Cerebro()
-cerebro.broker.setcommission(commission=0.001)
-cerebro.broker.setcash(100000)
-data = bt.feeds.YahooFinanceData(dataname='XOM', fromdate=datetime(2011, 1, 1),
-                                 todate=datetime(2012, 12, 31))
-cerebro.adddata(data)
-print(cerebro.broker.getvalue())
-cerebro.addstrategy(TestStrategy)
-cerebro.run()
-print(cerebro.broker.getvalue())
-cerebro.plot()
+class backtest:
+    def __init__(self, stock_symbol, start=datetime(2010,1,1),
+            end=datetime(2017,1,1), strategy=TestStrategy):
+        self.cerebro = bt.Cerebro()
+        self.cerebro.broker.setcommission(commission=0.001)
+        self.cerebro.broker.setcash(100000)
+        data = bt.feeds.YahooFinanceData(dataname=stock_symbol,fromdate=start,
+                todate=end)
+        self.cerebro.adddata(data)
+        print("Value before transactions:", self.cerebro.broker.getvalue())
+        self.cerebro.addstrategy(strategy)
+
+    def run(self, plot=False):
+        self.cerebro.run()
+        print("Value after transactions:", self.cerebro.broker.getvalue())
+        if plot:
+            self.cerebro.plot()

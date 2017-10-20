@@ -2,7 +2,7 @@ import pandas as pd
 from googlefinance.client import get_price_data, get_prices_data, get_prices_time_data
 
 def create_data():
-    url = "../data/CME_CL1.csv"
+    url = "data/CME_CL1.csv"
     crude_oil = pd.read_csv(url, index_col=0, parse_dates=True)
     crude_oil.sort_index(inplace=True)
     crude_oil_last = crude_oil['Last']
