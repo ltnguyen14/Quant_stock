@@ -45,7 +45,7 @@ def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     #Adding lag
     all_lag_losses = []
-    lag_range = 5
+    lag_range = 1
     lag_epoch_num = 5
     for i in range(lag_range):
         with tf.Session() as sess:
@@ -70,7 +70,7 @@ def feedforward_neural_network(inputs):
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     oil_train, stock_train, oil_test, stock_test = inputs
 
-    hm_epochs = 10
+    hm_epochs = 5
     oil_train, stock_train, oil_test, stock_test = refine_input_with_lag(oil_train, stock_train, oil_test, stock_test)
     saver = tf.train.Saver()
     with tf.Session() as sess:
@@ -83,7 +83,6 @@ def feedforward_neural_network(inputs):
                 epoch_loss += c
 
             print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
-
         correct = tf.subtract(prediction, y)
         total = 0
         cor = 0
@@ -92,7 +91,7 @@ def feedforward_neural_network(inputs):
             if abs(correct.eval({x:[[X]], y:[[Y]]})) < 5:
                 cor += 1
         print('Accuracy:', cor/total)
-        save_path = saver.save(sess, "../data/model/feedforward.ckpt")
+        save_path = saver.save(sess, "data/model/feedforward.ckpt")
         print("Model saved in file: %s" % save_path)
 
 if __name__ == "__main__":

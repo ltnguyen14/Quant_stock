@@ -1,9 +1,10 @@
 import argparse
 from pipeline import backtest
 from pipeline.backtest import TestStrategy
-#from pipeline.strategies import ff_strat
+from pipeline.strategies.ff_strat import FeedforwardStrategy
 from scripts import feedforward_nn
 from scripts import data_process as dp
+
 def arg_parser():
     parser = argparse.ArgumentParser(description="Stock prediction model", formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-b', '--btest', help='Run backtest with the model',
@@ -21,18 +22,17 @@ def arg_parser():
 class inputHandler:
     def __init__(self, inputs):
         self.inputs = inputs
+        if self.inputs.train:
+            self.train(self.inputs.train)
         if self.inputs.btest:
             if self.inputs.btest == "test":
                 self.run(TestStrategy)
             elif self.inputs.btest == "feedforward":
-                self.run(ff_strat)
-
-        if self.inputs.train:
-            self.train(self.inputs.train)
+                self.run(FeedforwardStrategy)
 
     def run(self, strategy):
         backtest_obj = backtest.backtest(stock_symbol='XOM', strategy=strategy)
-        backtest_obj.run(plot=True)
+        backtest_obj.run(plot=False)
 
     def train(self, model):
         if model == "feedforward":
