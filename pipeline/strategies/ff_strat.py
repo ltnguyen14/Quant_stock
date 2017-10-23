@@ -18,9 +18,17 @@ class FeedforwardStrategy(bt.Strategy):
         self.buyprice = None
         self.buycomm = None
 
+        print("Loading pre-trained model...")
         self.sess=tf.Session()
         self.saver = tf.train.import_meta_graph("data/model/feedforward.ckpt.meta")
         self.saver.restore(self.sess, tf.train.latest_checkpoint('data/model/'))
+        print("Model loaded...")
+
+        self.graph = tf.get_default_graph()
+        output = tf.placeholder('float')
+        x = tf.placeholder('float')
+        self.sess.run(output, feed_dict={x:[[10]]})
+        print(output)
 
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
@@ -55,7 +63,7 @@ class FeedforwardStrategy(bt.Strategy):
 
     def next(self):
         # Simply log the closing price of the series from the reference
-        self.log('Close, %.2f' % self.dataclose[0])
+        #self.log('Close, %.2f' % self.dataclose[0])
         # Check if an order is pending ... if yes, we cannot send a 2nd one
         if self.order:
             return

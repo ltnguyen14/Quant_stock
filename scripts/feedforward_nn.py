@@ -35,7 +35,7 @@ def neural_network_model(data):
     l3 = tf.nn.relu(l3)
 
     output = tf.add(tf.matmul(l3,output_layer['weights']),
-            output_layer['biases'])
+            output_layer['biases'], name="output")
 
     return output
 
@@ -65,23 +65,23 @@ def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
     return oil_train, stock_train, oil_test, stock_test
 
 def feedforward_neural_network(inputs):
+    oil_train, stock_train, oil_test, stock_test = inputs
     prediction = neural_network_model(x)
     cost = tf.reduce_mean(tf.square(y-prediction, name="cost") )
     optimizer = tf.train.AdamOptimizer().minimize(cost)
-    oil_train, stock_train, oil_test, stock_test = inputs
+    #oil_train, stock_train, oil_test, stock_test = inputs
 
     hm_epochs = 5
     oil_train, stock_train, oil_test, stock_test = refine_input_with_lag(oil_train, stock_train, oil_test, stock_test)
     saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-       #Running neural net
+        #Running neural net
         for epoch in range(hm_epochs):
             epoch_loss = 0
             for (X,Y) in zip(oil_train.values, stock_train.values):
                 _, c = sess.run([optimizer, cost], feed_dict={x: [[X]], y: [[Y]]})
                 epoch_loss += c
-
             print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
         correct = tf.subtract(prediction, y)
         total = 0
@@ -93,6 +93,7 @@ def feedforward_neural_network(inputs):
         print('Accuracy:', cor/total)
         save_path = saver.save(sess, "data/model/feedforward.ckpt")
         print("Model saved in file: %s" % save_path)
-
+        sess.run(prediction, {x:[[10]]})
+        print(prediction)
 if __name__ == "__main__":
     feedforward_neural_network(x)
