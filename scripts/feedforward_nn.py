@@ -9,7 +9,7 @@ n_nodes_hl3 = 500
 n_classes = 1
 batch_size = 100
 
-x = tf.placeholder('float')
+x = tf.placeholder('float', name='input')
 y = tf.placeholder('float')
 
 def neural_network_model(data):

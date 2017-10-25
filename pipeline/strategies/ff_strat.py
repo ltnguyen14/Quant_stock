@@ -25,10 +25,9 @@ class FeedforwardStrategy(bt.Strategy):
         print("Model loaded...")
 
         self.graph = tf.get_default_graph()
-        output = tf.placeholder('float')
-        x = tf.placeholder('float')
-        self.sess.run(output, feed_dict={x:[[10]]})
-        print(output)
+        x = self.graph.get_tensor_by_name('input:0')
+        prediction = self.graph.get_tensor_by_name('output:0')
+        print(self.sess.run(prediction, feed_dict={x: [[10.0]]}))
 
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
