@@ -5,6 +5,7 @@ from pipeline.strategies.ff_strat import FeedforwardStrategy
 from scripts import feedforward_nn
 from scripts import data_process as dp
 
+
 def arg_parser():
     parser = argparse.ArgumentParser(description="Stock prediction model", formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-b', '--btest', help='Run backtest with the model',
@@ -19,6 +20,7 @@ def arg_parser():
     args = parser.parse_args()
     return args
 
+
 class inputHandler:
     def __init__(self, inputs):
         self.inputs = inputs
@@ -30,11 +32,13 @@ class inputHandler:
             elif self.inputs.btest == "feedforward":
                 self.run(FeedforwardStrategy)
 
-    def run(self, strategy):
-        backtest_obj = backtest.backtest(stock_symbol='XOM', strategy=strategy)
-        backtest_obj.run(plot=False)
+    @staticmethod
+    def run(strategy):
+        backtest_obj = backtest.Backtest(stock_symbol='XOM', strategy=strategy)
+        backtest_obj.run(plot=True)
 
-    def train(self, model):
+    @staticmethod
+    def train(model):
         if model == "feedforward":
             inputs = dp.create_data()
             feedforward_nn.feedforward_neural_network(inputs)

@@ -1,9 +1,11 @@
-from datetime import datetime
+import matplotlib.pyplot as plt
 import backtrader as bt
 import tensorflow as tf
+from scripts import data_process as dp
+import pickle
+
 
 class FeedforwardStrategy(bt.Strategy):
-
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
         dt = dt or self.datas[0].datetime.date(0)
@@ -25,9 +27,11 @@ class FeedforwardStrategy(bt.Strategy):
         print("Model loaded...")
 
         self.graph = tf.get_default_graph()
-        x = self.graph.get_tensor_by_name('input:0')
-        prediction = self.graph.get_tensor_by_name('output:0')
-        print(self.sess.run(prediction, feed_dict={x: [[10.0]]}))
+        self.x = self.graph.get_tensor_by_name('input:0')
+        self.prediction = self.graph.get_tensor_by_name('output:0')
+        _, _, _, _, self.oil_price, self.stock_price = dp.create_data()
+
+        self.prediction_graph()
 
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
@@ -60,6 +64,19 @@ class FeedforwardStrategy(bt.Strategy):
         self.log('OPERATION PROFIT, GROSS %.2f, NET %.2f' %
                  (trade.pnl, trade.pnlcomm))
 
+    def prediction_graph(self):
+        predictions = []
+        canon = []
+        for i in self.oil_price:
+            predictions.append(self.sess.run(self.prediction, feed_dict={self.x: [[i]]})[0][0])
+        for i in self.stock_price:
+            canon.append(i)
+        plt.plot(canon)
+        plt.plot(predictions)
+        plt.ylabel('Price')
+        plt.xlabel('Date')
+        plt.show()
+
     def next(self):
         # Simply log the closing price of the series from the reference
         #self.log('Close, %.2f' % self.dataclose[0])
@@ -69,17 +86,19 @@ class FeedforwardStrategy(bt.Strategy):
         # Check if we are in the market
         if not self.position:
             # Not yet ... we MIGHT BUY if ...
-            if self.dataclose[0] < self.dataclose[-1]:
-                    # current close less than previous close
-                    if self.dataclose[-1] < self.dataclose[-2]:
-                        # previous close less than the previous close
-                        # BUY, BUY, BUY!!! (with default parameters)
-                        self.log('BUY CREATE, %.2f' % self.dataclose[0])
-                        # Keep track of the created order to avoid a 2nd order
-                        self.order = self.buy()
+            if self.datas[0].datetime.date(0) in self.oil_price:
+                print(self.sess.run(self.prediction, feed_dict={self.x: [[self.oil_price[self.datas[0].datetime.date(0)]]]}),  self.dataclose[0])
+                if self.sess.run(self.prediction,
+                                 feed_dict={self.x: [[self.oil_price[self.datas[0].datetime.date(0)]]]}) > self.dataclose[0]:
+                    # previous close less than the previous close
+                    # BUY, BUY, BUY!!! (with default parameters)
+                    self.log('BUY CREATE, %.2f' % self.dataclose[0])
+                    # Keep track of the created order to avoid a 2nd order
+                    self.order = self.buy()
+
         else:
             # Already in the market ... we might sell
-            if len(self) >= (self.bar_executed + 5):
+            if len(self) >= (self.bar_executed + 2):
                 # SELL, SELL, SELL!!! (with all possible default parameters)
                 self.log('SELL CREATE, %.2f' % self.dataclose[0])
                 # Keep track of the created order to avoid a 2nd order

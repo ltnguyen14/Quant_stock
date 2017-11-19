@@ -1,6 +1,7 @@
 import pandas as pd
 from googlefinance.client import get_price_data, get_prices_data, get_prices_time_data
 
+
 def create_data():
     url = "data/CME_CL1.csv"
     crude_oil = pd.read_csv(url, index_col=0, parse_dates=True)
@@ -26,7 +27,8 @@ def create_data():
     oil_test = oil_price.iloc[split_index:]
     stock_test = oil_price.iloc[split_index:]
 
-    return oil_train, stock_train, oil_test, stock_test
+    return oil_train, stock_train, oil_test, stock_test, oil_price, stock_price
+
 
 def add_lag(dataset_1, dataset_2, lag):
     if lag != 0:

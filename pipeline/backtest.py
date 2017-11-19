@@ -1,14 +1,16 @@
 from datetime import datetime
 import backtrader as bt
 
+
 class SmaCross(bt.SignalStrategy):
     params = (('pfast', 10), ('pslow', 30),)
     def __init__(self):
         sma1, sma2 = bt.ind.SMA(period=self.p.pfast), bt.ind.SMA(period=self.p.pslow)
         self.signal_add(bt.SIGNAL_LONG, bt.ind.CrossOver(sma1, sma2))
+
+
 # Create a Stratey
 class TestStrategy(bt.Strategy):
-
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
         dt = dt or self.datas[0].datetime.date(0)
@@ -94,14 +96,15 @@ class TestStrategy(bt.Strategy):
                 # Keep track of the created order to avoid a 2nd order
                 self.order = self.sell()
 
-class backtest:
-    def __init__(self, stock_symbol, start=datetime(2010,1,1),
-            end=datetime(2017,1,1), strategy=TestStrategy):
+
+class Backtest:
+    def __init__(self, stock_symbol, start=datetime(2010, 1, 1),
+                 end=datetime(2017, 1, 1), strategy=TestStrategy):
         self.cerebro = bt.Cerebro()
         self.cerebro.broker.setcommission(commission=0.001)
         self.cerebro.broker.setcash(100000)
-        data = bt.feeds.YahooFinanceData(dataname=stock_symbol,fromdate=start,
-                todate=end)
+        data = bt.feeds.YahooFinanceData(dataname=stock_symbol, fromdate=start,
+                                         todate=end)
         self.cerebro.adddata(data)
         print("Value before transactions:", self.cerebro.broker.getvalue())
         self.cerebro.addstrategy(strategy)
