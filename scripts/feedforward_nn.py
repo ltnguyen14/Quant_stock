@@ -73,7 +73,7 @@ def feedforward_neural_network(inputs):
     oil_train, stock_train, oil_test, stock_test, _, _ = inputs
     prediction = neural_network_model(x)
     cost = tf.reduce_mean(tf.square(tf.transpose(prediction)-y))
-    optimizer = tf.train.AdamOptimizer(learning_rate=0.1).minimize(cost)
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
     #oil_train, stock_train, oil_test, stock_test = inputs
 
     hm_epochs = 5

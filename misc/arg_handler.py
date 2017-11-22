@@ -2,16 +2,16 @@ import argparse
 from pipeline import backtest
 from pipeline.backtest import TestStrategy
 from pipeline.strategies.ff_strat import FeedforwardStrategy
-from scripts import feedforward_nn
+from scripts import feedforward_nn, recurrent_lstm
 from scripts import data_process as dp
 
 
 def arg_parser():
     parser = argparse.ArgumentParser(description="Stock prediction model", formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-b', '--btest', help='Run backtest with the model',
-            default=None, choices=['test', 'feedforward', 'rnn', 'cnn'])
+            default=None, choices=['test', 'feedforward', 'recurrent_lstm', 'cnn'])
     parser.add_argument('-t', '--train', help='Train a model', default=None,
-            choices=['feedforward', 'rnn', 'cnn'])
+            choices=['feedforward', 'recurrent_lstm', 'cnn'])
     parser.add_argument('-s','--sword', help='Enter the stop words file name', default=None)
     parser.add_argument('-a','--algorithm', help='Choose the algorithm', choices=['heapq','counter','sorted'], default='heapq')
     parser.add_argument('-g', '--graphical', help='Graphical Histogram', action="store_true")
@@ -21,7 +21,7 @@ def arg_parser():
     return args
 
 
-class inputHandler:
+class InputHandler:
     def __init__(self, inputs):
         self.inputs = inputs
         if self.inputs.train:
@@ -39,6 +39,8 @@ class inputHandler:
 
     @staticmethod
     def train(model):
+        inputs = dp.create_data()
         if model == "feedforward":
-            inputs = dp.create_data()
             feedforward_nn.feedforward_neural_network(inputs)
+        elif model == "recurrent_lstm":
+            recurrent_lstm.recurrent_neural_network(inputs)

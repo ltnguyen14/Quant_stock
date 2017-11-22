@@ -66,13 +66,12 @@ class FeedforwardStrategy(bt.Strategy):
 
     def prediction_graph(self):
         predictions = []
-        canon = []
         for i in self.oil_price:
             predictions.append(self.sess.run(self.prediction, feed_dict={self.x: [[i]]})[0][0])
-        for i in self.stock_price:
-            canon.append(i)
-        plt.plot(canon)
-        plt.plot(predictions)
+        plt.plot(self.oil_price.values, label='Oil Prices')
+        plt.plot(self.stock_price.values, label='Stock Prices')
+        plt.plot(predictions, label="Predictions")
+        plt.legend()
         plt.ylabel('Price')
         plt.xlabel('Date')
         plt.show()
@@ -103,4 +102,3 @@ class FeedforwardStrategy(bt.Strategy):
                 self.log('SELL CREATE, %.2f' % self.dataclose[0])
                 # Keep track of the created order to avoid a 2nd order
                 self.order = self.sell()
-

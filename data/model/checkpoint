@@ -1,2 +1,2 @@
-model_checkpoint_path: "feedforward.ckpt"
-all_model_checkpoint_paths: "feedforward.ckpt"
+model_checkpoint_path: "recurrent.ckpt"
+all_model_checkpoint_paths: "recurrent.ckpt"

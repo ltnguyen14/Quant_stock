@@ -1,9 +1,9 @@
-from misc.arg_handler import arg_parser, inputHandler
+from misc.arg_handler import arg_parser, InputHandler
 
 
 def main():
     inputs = arg_parser()
-    inputHandler(inputs)
+    InputHandler(inputs)
 
 
 if __name__ == "__main__":
