@@ -6,8 +6,9 @@ import pickle
 
 n_classes = 10
 rnn_size = 512
-chunk_size = 10
-n_chunks = 1
+chunk_size = 1
+n_chunks = 10
+total_chunk_size = chunk_size*n_chunks
 
 x = tf.placeholder('float', name='input_recurrent')
 y = tf.placeholder('float', name='train_output_recurrent')
@@ -45,9 +46,9 @@ def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
             oil_lag, stock_lag = dp.add_lag(oil_train, stock_train, i)
             for epoch in range(lag_epoch_num):
                 lag_loss = 0
-                for index in range(int(len(oil_lag.values)/chunk_size)):
-                    x_in = oil_lag.values[index*chunk_size:index*chunk_size + chunk_size].reshape((1, n_chunks, chunk_size))
-                    y_in = stock_lag.values[index*chunk_size:index*chunk_size + chunk_size].reshape((1, n_chunks, chunk_size))
+                for index in range(int(len(oil_lag.values)/total_chunk_size)):
+                    x_in = oil_lag.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+                    y_in = stock_lag.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
                     _, c = sess.run([optimizer, cost], feed_dict={x: x_in, y: y_in})
                     lag_loss += c
                 print('Lag', i, 'epoch', epoch, 'loss:', lag_loss)
@@ -74,30 +75,29 @@ def recurrent_neural_network(inputs):
         #Running neural net
         for epoch in range(hm_epochs):
             epoch_loss = 0
-            for index in range(int(len(oil_train.values) / chunk_size)):
-                x_in = oil_train.values[index*chunk_size:index*chunk_size + chunk_size].reshape((1, n_chunks, chunk_size))
-                y_in = stock_train.values[index*chunk_size:index*chunk_size + chunk_size].reshape((1, n_chunks, chunk_size))
+            for index in range(int(len(oil_train.values) / total_chunk_size)):
+                x_in = oil_train.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+                y_in = stock_train.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
                 _, c = sess.run([optimizer, cost], feed_dict={x: x_in, y: y_in})
                 epoch_loss += c
             print('Epoch', epoch, 'completed out of', hm_epochs, 'loss:', epoch_loss)
         correct = tf.subtract(prediction, y)
         total = 0
         cor = 0
-        for index in range(int(len(oil_test.values) / chunk_size)):
-            x_in = oil_test.values[index*chunk_size:index*chunk_size + chunk_size].reshape((1, n_chunks, chunk_size))
-            y_in = stock_test.values[index*chunk_size:index*chunk_size + chunk_size].reshape((1, n_chunks, chunk_size))
-            total += chunk_size
-            if abs(correct.eval({x: x_in, y: y_in})).all() < 5:
-                cor += chunk_size
+        for index in range(int(len(oil_test.values) / total_chunk_size)):
+            x_in = oil_test.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+            y_in = stock_test.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+            total += total_chunk_size
+            if abs(correct.eval(feed_dict={x: x_in, y: y_in})).all() < 5:
+                cor += total_chunk_size
         print('Accuracy:', cor/total)
         save_path = saver.save(sess, "data/model/recurrent.ckpt")
         print("Model saved in file: %s" % save_path)
 
         predictions = []
-        for index in range(int(len(oil_price.values) / chunk_size)):
-            x_in = oil_price.values[index*chunk_size:index*chunk_size + chunk_size].reshape((1, n_chunks, chunk_size))
-            print(sess.run(prediction, feed_dict={x: x_in})[0].reshape(chunk_size).tolist())
-            predictions += sess.run(prediction, feed_dict={x: x_in})[0].reshape(chunk_size).tolist()
+        for index in range(int(len(oil_price.values) / total_chunk_size)):
+            x_in = oil_price.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+            predictions += sess.run(prediction, feed_dict={x: x_in})[0].reshape(total_chunk_size).tolist()
         plt.plot(oil_price.values, label='Oil Prices')
         plt.plot(stock_price.values, label='Stock Prices')
         plt.plot(predictions, label="Predictions")
