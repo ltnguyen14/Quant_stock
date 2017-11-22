@@ -96,7 +96,8 @@ def recurrent_neural_network(inputs):
         predictions = []
         for index in range(int(len(oil_price.values) / chunk_size)):
             x_in = oil_price.values[index*chunk_size:index*chunk_size + chunk_size].reshape((1, n_chunks, chunk_size))
-            print(x_in, sess.run(prediction, feed_dict={x: x_in}))
+            print(sess.run(prediction, feed_dict={x: x_in})[0].reshape(chunk_size).tolist())
+            predictions += sess.run(prediction, feed_dict={x: x_in})[0].reshape(chunk_size).tolist()
         plt.plot(oil_price.values, label='Oil Prices')
         plt.plot(stock_price.values, label='Stock Prices')
         plt.plot(predictions, label="Predictions")

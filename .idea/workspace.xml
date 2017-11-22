@@ -2,16 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3f5617b9-5f3c-4683-b9c6-a535f225cf4c" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/model/feedforward.p" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/feedforward.ckpt.data-00000-of-00001" afterPath="$PROJECT_DIR$/data/model/feedforward.ckpt.data-00000-of-00001" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/feedforward.ckpt.index" afterPath="$PROJECT_DIR$/data/model/feedforward.ckpt.index" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/feedforward.ckpt.meta" afterPath="$PROJECT_DIR$/data/model/feedforward.ckpt.meta" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/recurrent.ckpt.data-00000-of-00001" afterPath="$PROJECT_DIR$/data/model/recurrent.ckpt.data-00000-of-00001" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/recurrent.ckpt.index" afterPath="$PROJECT_DIR$/data/model/recurrent.ckpt.index" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/checkpoint" afterPath="$PROJECT_DIR$/data/model/checkpoint" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/driver.py" afterPath="$PROJECT_DIR$/driver.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/misc/arg_handler.py" afterPath="$PROJECT_DIR$/misc/arg_handler.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pipeline/strategies/ff_strat.py" afterPath="$PROJECT_DIR$/pipeline/strategies/ff_strat.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/feedforward_nn.py" afterPath="$PROJECT_DIR$/scripts/feedforward_nn.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/recurrent_lstm.py" afterPath="$PROJECT_DIR$/scripts/recurrent_lstm.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -22,7 +15,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/Quant_stock$feedforward_nn__1_.coverage" NAME="feedforward_nn (1) Coverage Results" MODIFIED="1511340757391" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Quant_stock$feedforward_nn__1_.coverage" NAME="feedforward_nn (1) Coverage Results" MODIFIED="1511341999335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Quant_stock$feedforward_nn.coverage" NAME="feedforward_nn Coverage Results" MODIFIED="1511326389808" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
   </component>
   <component name="FileColors">
@@ -62,8 +55,8 @@
       <file leaf-file-name="recurrent_lstm.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/recurrent_lstm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="62">
-              <caret line="89" column="56" lean-forward="false" selection-start-line="89" selection-start-column="56" selection-end-line="89" selection-end-column="56" />
+            <state relative-caret-position="361">
+              <caret line="98" column="91" lean-forward="false" selection-start-line="98" selection-start-column="91" selection-end-line="98" selection-end-column="91" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -924,8 +917,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/recurrent_lstm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="62">
-          <caret line="89" column="56" lean-forward="false" selection-start-line="89" selection-start-column="56" selection-end-line="89" selection-end-column="56" />
+        <state relative-caret-position="361">
+          <caret line="98" column="91" lean-forward="false" selection-start-line="98" selection-start-column="91" selection-end-line="98" selection-end-column="91" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
