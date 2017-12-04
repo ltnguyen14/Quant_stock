@@ -3,6 +3,8 @@ Stock analysis/prediction model using machine learning using the impact between 
 
 ---
 
+![Architecture Diagram](Diagram.png?raw=true "Architecture Diagram")
+
 ## Models used
 There are three ML model that are being implemented:
 * A simple feedforward neural network
