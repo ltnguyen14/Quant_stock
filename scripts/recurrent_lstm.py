@@ -96,7 +96,7 @@ def recurrent_neural_network(inputs):
                 test_res += [0,0,0,0,0,0,0,0,0,0]
 
         print('Accuracy:', cor/total)
-        save_path = saver.save(sess, "data/model/recurrent.ckpt")
+        save_path = saver.save(sess, "data/model/recurrent/recurrent.ckpt")
         print("Model saved in file: %s" % save_path)
 
         predictions = []

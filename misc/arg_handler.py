@@ -9,13 +9,10 @@ from scripts import data_process as dp
 def arg_parser():
     parser = argparse.ArgumentParser(description="Stock prediction model", formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-b', '--btest', help='Run backtest with the model',
-            default=None, choices=['test', 'feedforward', 'recurrent_lstm', 'cnn'])
+            default=None, choices=['test', 'feedforward', 'recurrent', 'cnn'])
     parser.add_argument('-t', '--train', help='Train a model', default=None,
-            choices=['feedforward', 'recurrent_lstm', 'cnn'])
-    parser.add_argument('-s','--sword', help='Enter the stop words file name', default=None)
-    parser.add_argument('-a','--algorithm', help='Choose the algorithm', choices=['heapq','counter','sorted'], default='heapq')
+            choices=['feedforward', 'recurrent', 'cnn'])
     parser.add_argument('-g', '--graphical', help='Graphical Histogram', action="store_true")
-    #parser.add_argument('-r', '--repeat', help='Repeat Time', type = int, default = 1)
 
     args = parser.parse_args()
     return args

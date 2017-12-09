@@ -96,7 +96,7 @@ def feedforward_neural_network(inputs):
             if abs(correct.eval({x: [[X]], y: [[Y]]})) < 5:
                 cor += 1
         print('Accuracy:', cor/total)
-        save_path = saver.save(sess, "data/model/feedforward.ckpt")
+        save_path = saver.save(sess, "data/model/feedforward/feedforward.ckpt")
         print("Model saved in file: %s" % save_path)
 
 

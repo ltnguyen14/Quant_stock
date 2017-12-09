@@ -21,9 +21,9 @@ class FeedforwardStrategy(bt.Strategy):
         self.buycomm = None
 
         print("Loading pre-trained model...")
-        self.sess=tf.Session()
-        self.saver = tf.train.import_meta_graph("data/model/feedforward.ckpt.meta")
-        self.saver.restore(self.sess, tf.train.latest_checkpoint('data/model/'))
+        self.sess = tf.Session()
+        self.saver = tf.train.import_meta_graph("data/model/feedforward/feedforward.ckpt.meta")
+        self.saver.restore(self.sess, tf.train.latest_checkpoint('data/model/feedforward'))
         print("Model loaded...")
 
         self.graph = tf.get_default_graph()
