@@ -4,10 +4,12 @@ from tensorflow.contrib import rnn
 import matplotlib.pyplot as plt
 import pickle
 
-n_classes = 10
+# Shape of output matrix
+n_classes = 2
 rnn_size = 512
 chunk_size = 1
-n_chunks = 10
+n_chunks = 2
+# Shape of matrix input
 total_chunk_size = chunk_size*n_chunks
 
 x = tf.placeholder('float', name='input_recurrent')
@@ -57,19 +59,18 @@ def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
     oil_train, stock_train = dp.add_lag(oil_train, stock_train, lag)
     oil_test, stock_test = dp.add_lag(oil_test, stock_test, lag)
     print("The best lag is:", lag)
-    pickle.dump(lag, open("data/save.p", "wb"))
+    pickle.dump(lag, open("data/lag.p", "wb"))
     return oil_train, stock_train, oil_test, stock_test
 
 
 def recurrent_neural_network(inputs):
     oil_train, stock_train, oil_test, stock_test, oil_price, stock_price = inputs
     cost = tf.reduce_mean(tf.square(prediction-y))
-    optimizer = tf.train.AdamOptimizer(learning_rate=0.01).minimize(cost)
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
     #oil_train, stock_train, oil_test, stock_test = inputs
 
-    hm_epochs = 2
+    hm_epochs = 5
     oil_train, stock_train, oil_test, stock_test = refine_input_with_lag(oil_train, stock_train, oil_test, stock_test)
-    saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         #Running neural net
@@ -84,17 +85,14 @@ def recurrent_neural_network(inputs):
         correct = tf.reduce_mean(tf.square(tf.subtract(prediction, y)))
         total = 0
         cor = 0
-        test_res = []
         for index in range(int(len(oil_test.values) / total_chunk_size)):
             x_in = oil_test.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
             y_in = stock_test.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
             total += total_chunk_size
             if abs(correct.eval(feed_dict={x: x_in, y: y_in})) < 5:
                 cor += total_chunk_size
-                test_res += y_in.reshape(total_chunk_size).tolist()
-            else:
-                test_res += [0,0,0,0,0,0,0,0,0,0]
 
+        saver = tf.train.Saver()
         print('Accuracy:', cor/total)
         save_path = saver.save(sess, "data/model/recurrent/recurrent.ckpt")
         print("Model saved in file: %s" % save_path)
@@ -106,7 +104,6 @@ def recurrent_neural_network(inputs):
         plt.plot(oil_price.values, label='Oil Prices')
         plt.plot(stock_price.values, label='Stock Prices')
         plt.plot(predictions, label="Predictions")
-        plt.plot(test_res, label="Correct")
         plt.legend()
         plt.ylabel('Price')
         plt.xlabel('Date')

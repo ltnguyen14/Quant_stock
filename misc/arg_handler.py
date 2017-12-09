@@ -4,6 +4,7 @@ from pipeline.backtest import TestStrategy
 from pipeline.strategies.ff_strat import FeedforwardStrategy
 from scripts import feedforward_nn, recurrent_lstm
 from scripts import data_process as dp
+from misc.graph import graph
 
 
 def arg_parser():
@@ -12,7 +13,7 @@ def arg_parser():
             default=None, choices=['test', 'feedforward', 'recurrent', 'cnn'])
     parser.add_argument('-t', '--train', help='Train a model', default=None,
             choices=['feedforward', 'recurrent', 'cnn'])
-    parser.add_argument('-g', '--graphical', help='Graphical Histogram', action="store_true")
+    parser.add_argument('-g', '--graph', help='Graph', nargs='*', choices=['test', 'feedforward', 'recurrent', 'cnn'])
 
     args = parser.parse_args()
     return args
@@ -28,6 +29,11 @@ class InputHandler:
                 self.run(TestStrategy)
             elif self.inputs.btest == "feedforward":
                 self.run(FeedforwardStrategy)
+        if self.inputs.graph:
+            if len(self.inputs.graph) != 0:
+                graph(self.inputs.graph)
+            else:
+                graph(['feedforward', 'recurrent', 'cnn'])
 
     @staticmethod
     def run(strategy):
@@ -39,5 +45,5 @@ class InputHandler:
         inputs = dp.create_data()
         if model == "feedforward":
             feedforward_nn.feedforward_neural_network(inputs)
-        elif model == "recurrent_lstm":
+        elif model == "recurrent":
             recurrent_lstm.recurrent_neural_network(inputs)

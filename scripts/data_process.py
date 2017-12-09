@@ -1,5 +1,6 @@
 import pandas as pd
 from googlefinance.client import get_price_data, get_prices_data, get_prices_time_data
+import pickle
 
 
 def create_data():
@@ -14,9 +15,16 @@ def create_data():
             'x': "NYSE",
             'p': '40Y'
     }
-    df = get_price_data(param)
-    df.set_index(df.index.normalize(), inplace=True)
-    stock_close = df['Close']
+
+    try:
+        print("Retrieving data")
+        df = get_price_data(param)
+        df.set_index(df.index.normalize(), inplace=True)
+        stock_close = df['Close']
+        pickle.dump(stock_close, open("data/stock_close.p", "wb"))
+    except:
+        print("Error in retrieving data... Loading previous saved stock data.")
+        stock_close = pickle.load(open("data/stock_close.p", "rb"))
 
     oil_price, stock_price = crude_oil_last.align(stock_close, join='inner')
 

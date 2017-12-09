@@ -76,7 +76,7 @@ def feedforward_neural_network(inputs):
     optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
     #oil_train, stock_train, oil_test, stock_test = inputs
 
-    hm_epochs = 5
+    hm_epochs = 10
     oil_train, stock_train, oil_test, stock_test = refine_input_with_lag(oil_train, stock_train, oil_test, stock_test)
     saver = tf.train.Saver()
     with tf.Session() as sess:

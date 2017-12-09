@@ -86,7 +86,6 @@ class FeedforwardStrategy(bt.Strategy):
         if not self.position:
             # Not yet ... we MIGHT BUY if ...
             if self.datas[0].datetime.date(0) in self.oil_price:
-                print(self.sess.run(self.prediction, feed_dict={self.x: [[self.oil_price[self.datas[0].datetime.date(0)]]]}),  self.dataclose[0])
                 if self.sess.run(self.prediction,
                                  feed_dict={self.x: [[self.oil_price[self.datas[0].datetime.date(0)]]]}) > self.dataclose[0]:
                     # previous close less than the previous close
