@@ -1,133 +1,135 @@
+from scripts import data_process as dp
 import tensorflow as tf
-import pandas as pd
-import numpy as np
-import matplotlib as mpl
+from tensorflow.contrib import rnn
 import matplotlib.pyplot as plt
-from pprint import pprint
-from googlefinance.client import get_price_data, get_prices_data, get_prices_time_data
-import datetime
+import pickle
 
-n_nodes_hl1 = 500
-n_nodes_hl2 = 500
-n_nodes_hl3 = 500
+input_size = 28
+n_classes = 10
+batch_size = 128
+keep_rate = 0.8
+keep_prob = tf.placeholder(tf.float32)
 
-n_classes = 1
-batch_size = 100
 
-x = tf.placeholder('float')
-y = tf.placeholder('float')
+def conv2d(x, W):
+    return tf.nn.conv2d(x, W, strides=[1,1,1,1], padding='SAME')
 
-def add_lag(dataset_1, dataset_2, lag):
-    if lag != 0:
-        dataset_2 = dataset_2[lag:]
-        dataset_1 = dataset_1[:-lag]
 
-    return dataset_1, dataset_2
+def maxpool2d(x):
+    #                        size of window         movement of window
+    return tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
 
-def create_data():
-    url = "CME_CL1.csv"
-    crude_oil = pd.read_csv(url, index_col=0, parse_dates=True)
-    crude_oil.sort_index(inplace=True)
-    crude_oil_last = crude_oil['Last']
 
-    param = {
-            'q': 'XOM',
-            'i': 86400,
-            'x': "NYSE",
-            'p': '40Y'
-    }
-    df = get_price_data(param)
-    df.set_index(df.index.normalize(), inplace=True)
-    stock_close = df['Close']
+x = tf.placeholder('float', name='input_cnn')
+y = tf.placeholder('float', name='train_output_cnn')
 
-    oil_price, stock_price = crude_oil_last.align(stock_close, join='inner')
 
-    split_index = int(3*len(oil_price)/4)
-    oil_train = oil_price.iloc[:split_index]
-    stock_train = oil_price.iloc[:split_index]
+def cnn_model(data):
+    weights = {'W_conv1': tf.Variable(tf.random_normal([5, 5, 1, 32])),
+               'W_conv2': tf.Variable(tf.random_normal([5, 5, 32, 64])),
+               'W_fc': tf.Variable(tf.random_normal([7 * 7 * 64, 1024])),
+               'out': tf.Variable(tf.random_normal([1024, n_classes]))}
 
-    oil_test = oil_price.iloc[split_index:]
-    stock_test = oil_price.iloc[split_index:]
+    biases = {'b_conv1': tf.Variable(tf.random_normal([32])),
+              'b_conv2': tf.Variable(tf.random_normal([64])),
+              'b_fc': tf.Variable(tf.random_normal([1024])),
+              'out': tf.Variable(tf.random_normal([n_classes]))}
 
-    return oil_train, stock_train, oil_test, stock_test
+    data = tf.reshape(data, shape=[-1, 28, 28, 1])
 
-def neural_network_model(data):
-    hidden_1_layer = {'weights':tf.Variable(tf.random_normal([1, n_nodes_hl1])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl1]))}
+    conv1 = tf.nn.relu(conv2d(x, weights['W_conv1']) + biases['b_conv1'])
+    conv1 = maxpool2d(conv1)
 
-    hidden_2_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl1, n_nodes_hl2])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl2]))}
+    conv2 = tf.nn.relu(conv2d(conv1, weights['W_conv2']) + biases['b_conv2'])
+    conv2 = maxpool2d(conv2)
 
-    hidden_3_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl2, n_nodes_hl3])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl3]))}
+    fc = tf.reshape(conv2, [-1, 7 * 7 * 64])
+    fc = tf.nn.relu(tf.matmul(fc, weights['W_fc']) + biases['b_fc'])
+    fc = tf.nn.dropout(fc, keep_rate)
 
-    output_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl3, n_classes])),
-                    'biases':tf.Variable(tf.random_normal([n_classes])),}
-
-    l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
-    l1 = tf.nn.relu(l1)
-
-    l2 = tf.add(tf.matmul(l1,hidden_2_layer['weights']), hidden_2_layer['biases'])
-    l2 = tf.nn.relu(l2)
-
-    l3 = tf.add(tf.matmul(l2,hidden_3_layer['weights']), hidden_3_layer['biases'])
-    l3 = tf.nn.relu(l3)
-
-    output = tf.add(tf.matmul(l3,output_layer['weights']),
-            output_layer['biases'])
+    output = tf.add(tf.matmul(fc, weights['out']), biases['out'], name='cnn_output')
 
     return output
 
+
+prediction = cnn_model(x)
+
+
+
 def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
-    prediction = neural_network_model(x)
-    cost = tf.reduce_mean(tf.square(y-prediction, name="cost") )
+    cost = tf.reduce_mean(tf.square(prediction-y))
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     #Adding lag
     all_lag_losses = []
-    lag_range = 30
-    lag_epoch_num = 50
+    lag_range = 1
+    lag_epoch_num = 1
     for i in range(lag_range):
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            oil_lag, stock_lag = add_lag(oil_train, stock_train, i)
+            oil_lag, stock_lag = dp.add_lag(oil_train, stock_train, i)
             for epoch in range(lag_epoch_num):
                 lag_loss = 0
-                for (X,Y) in zip(oil_lag.values, stock_lag.values):
-                    _, c = sess.run([optimizer, cost], feed_dict={x: [[X]], y: [[Y]]})
+                for index in range(int(len(oil_lag.values)/total_chunk_size)):
+                    x_in = oil_lag.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+                    y_in = stock_lag.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+                    _, c = sess.run([optimizer, cost], feed_dict={x: x_in, y: y_in})
                     lag_loss += c
                 print('Lag', i, 'epoch', epoch, 'loss:', lag_loss)
             all_lag_losses.append(lag_loss)
     lag = all_lag_losses.index(min(all_lag_losses))
-    oil_train, stock_train = add_lag(oil_train, stock_train, lag)
-    oil_test, stock_test = add_lag(oil_test, stock_test, lag)
+    oil_train, stock_train = dp.add_lag(oil_train, stock_train, lag)
+    oil_test, stock_test = dp.add_lag(oil_test, stock_test, lag)
     print("The best lag is:", lag)
+    pickle.dump(lag, open("data/lag.p", "wb"))
     return oil_train, stock_train, oil_test, stock_test
 
-def train_neural_network(x):
-    prediction = neural_network_model(x)
-    cost = tf.reduce_mean(tf.square(y-prediction, name="cost") )
-    optimizer = tf.train.AdamOptimizer().minimize(cost)
-    oil_train, stock_train, oil_test, stock_test = create_data()
 
-    hm_epochs = 400
+def conv_neural_network(inputs):
+    oil_train, stock_train, oil_test, stock_test, oil_price, stock_price = inputs
+    cost = tf.reduce_mean(tf.square(prediction-y))
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
+    #oil_train, stock_train, oil_test, stock_test = inputs
+
+    hm_epochs = 5
     oil_train, stock_train, oil_test, stock_test = refine_input_with_lag(oil_train, stock_train, oil_test, stock_test)
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-       #Running neural net
+        #Running neural net
         for epoch in range(hm_epochs):
             epoch_loss = 0
-            for (X,Y) in zip(oil_train.values, stock_train.values):
-                _, c = sess.run([optimizer, cost], feed_dict={x: [[X]], y: [[Y]]})
+            for index in range(int(len(oil_train.values) / total_chunk_size)):
+                x_in = oil_train.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+                y_in = stock_train.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+                _, c = sess.run([optimizer, cost], feed_dict={x: x_in, y: y_in})
                 epoch_loss += c
-
-            print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
-
-        correct = tf.subtract(prediction, y)
+            print('Epoch', epoch, 'completed out of', hm_epochs, 'loss:', epoch_loss)
+        correct = tf.reduce_mean(tf.square(tf.subtract(prediction, y)))
         total = 0
         cor = 0
-        for (X,Y) in zip(oil_test.values, stock_test.values):
-            total += 1
-            if abs(correct.eval({x:[[X]], y:[[Y]]})) < 5:
-                cor += 1
+        for index in range(int(len(oil_test.values) / total_chunk_size)):
+            x_in = oil_test.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+            y_in = stock_test.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+            total += total_chunk_size
+            if abs(correct.eval(feed_dict={x: x_in, y: y_in})) < 5:
+                cor += total_chunk_size
+
+        saver = tf.train.Saver()
         print('Accuracy:', cor/total)
-train_neural_network(x)
+        save_path = saver.save(sess, "data/model/recurrent/recurrent.ckpt")
+        print("Model saved in file: %s" % save_path)
+
+        predictions = []
+        for index in range(int(len(oil_price.values) / total_chunk_size)):
+            x_in = oil_price.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
+            predictions += sess.run(prediction, feed_dict={x: x_in})[0].reshape(total_chunk_size).tolist()
+        plt.plot(oil_price.values, label='Oil Prices')
+        plt.plot(stock_price.values, label='Stock Prices')
+        plt.plot(predictions, label="Predictions")
+        plt.legend()
+        plt.ylabel('Price')
+        plt.xlabel('Date')
+        plt.show()
+
+
+if __name__ == "__main__":
+    conv_neural_network(x)
