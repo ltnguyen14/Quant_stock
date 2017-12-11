@@ -1,5 +1,8 @@
 from scripts import data_process as dp
+import matplotlib
+from scripts.constants import *
 import tensorflow as tf
+import matplotlib.pyplot as plt
 import pickle
 
 n_nodes_hl1 = 500
@@ -47,8 +50,6 @@ def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     #Adding lag
     all_lag_losses = []
-    lag_range = 1
-    lag_epoch_num = 1
     for i in range(lag_range):
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
@@ -70,24 +71,23 @@ def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
 
 def feedforward_neural_network(inputs):
     x = tf.placeholder('float', name='input')
-    oil_train, stock_train, oil_test, stock_test, _, _ = inputs
+    oil_train, stock_train, oil_test, stock_test, oil_price, stock_price = inputs
     prediction = neural_network_model(x)
     cost = tf.reduce_mean(tf.square(tf.transpose(prediction)-y))
-    optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
+    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
     #oil_train, stock_train, oil_test, stock_test = inputs
 
-    hm_epochs = 10
     oil_train, stock_train, oil_test, stock_test = refine_input_with_lag(oil_train, stock_train, oil_test, stock_test)
     saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         #Running neural net
-        for epoch in range(hm_epochs):
+        for epoch in range(hm_epoch):
             epoch_loss = 0
             for (X, Y) in zip(oil_train.values, stock_train.values):
                 _, c = sess.run([optimizer, cost], feed_dict={x: [[X]], y: [[Y]]})
                 epoch_loss += c
-            print('Epoch', epoch, 'completed out of', hm_epochs, 'loss:', epoch_loss)
+            print('Epoch', epoch, 'completed out of', hm_epoch, 'loss:', epoch_loss)
         correct = tf.subtract(prediction, y)
         total = 0
         cor = 0
@@ -98,6 +98,19 @@ def feedforward_neural_network(inputs):
         print('Accuracy:', cor/total)
         save_path = saver.save(sess, "data/model/feedforward/feedforward.ckpt")
         print("Model saved in file: %s" % save_path)
+
+        date_labels = oil_price.index
+        date_labels = matplotlib.dates.date2num(date_labels.to_pydatetime())
+
+        predictions = []
+        for i in oil_price:
+            predictions.append(sess.run(prediction, feed_dict={x: [[i]]})[0][0])
+        plt.plot_date(date_labels, predictions, 'b-', label="Feedforward Predictions")
+        plt.plot_date(date_labels, stock_price.values, 'r-', label='Stock Prices')
+        plt.legend()
+        plt.ylabel('Price')
+        plt.xlabel('Year')
+        plt.show()
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib
 import tensorflow as tf
 from scripts import data_process as dp
 
@@ -29,6 +30,8 @@ def graph(models):
 
         predictions = []
         if model == 'feedforward':
+            date_labels = oil_price.index
+            date_labels = matplotlib.dates.date2num(date_labels.to_pydatetime())
             for i in oil_price:
                 predictions.append(sess.run(prediction, feed_dict={x: [[i]]})[0][0])
         elif model == 'recurrent':
@@ -38,9 +41,9 @@ def graph(models):
                     (1, n_chunks, chunk_size))
                 predictions += sess.run(prediction, feed_dict={x: x_in})[0].reshape(total_chunk_size).tolist()
 
-        plt.plot(stock_price.values, label='Stock Prices')
-        plt.plot(predictions, label=model+" predictions")
+        plt.plot_date(date_labels, predictions, 'b-', label="Feedforward Predictions")
+        plt.plot_date(date_labels, stock_price.values, 'r-', label='Stock Prices')
         plt.legend()
     plt.ylabel('Price')
-    plt.xlabel('Date')
+    plt.xlabel('Year')
     plt.show()

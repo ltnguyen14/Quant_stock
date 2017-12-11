@@ -2,7 +2,7 @@ import argparse
 from pipeline import backtest
 from pipeline.backtest import TestStrategy
 from pipeline.strategies.ff_strat import FeedforwardStrategy
-from scripts import feedforward_nn, recurrent_lstm
+from scripts import feedforward_nn, recurrent_lstm, ConvNet
 from scripts import data_process as dp
 from misc.graph import graph
 
@@ -47,3 +47,5 @@ class InputHandler:
             feedforward_nn.feedforward_neural_network(inputs)
         elif model == "recurrent":
             recurrent_lstm.recurrent_neural_network(inputs)
+        elif model == 'cnn':
+            ConvNet.conv_neural_network(inputs)

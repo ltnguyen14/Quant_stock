@@ -1,14 +1,16 @@
 from scripts import data_process as dp
+from scripts.constants import *
 import tensorflow as tf
 from tensorflow.contrib import rnn
 import matplotlib.pyplot as plt
+import matplotlib
 import pickle
 
 # Shape of output matrix
-n_classes = 2
+n_classes = 5
 rnn_size = 512
 chunk_size = 1
-n_chunks = 2
+n_chunks = 5
 # Shape of matrix input
 total_chunk_size = chunk_size*n_chunks
 
@@ -40,8 +42,6 @@ def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
     optimizer = tf.train.AdamOptimizer().minimize(cost)
     #Adding lag
     all_lag_losses = []
-    lag_range = 1
-    lag_epoch_num = 1
     for i in range(lag_range):
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
@@ -66,22 +66,21 @@ def refine_input_with_lag(oil_train, stock_train, oil_test, stock_test):
 def recurrent_neural_network(inputs):
     oil_train, stock_train, oil_test, stock_test, oil_price, stock_price = inputs
     cost = tf.reduce_mean(tf.square(prediction-y))
-    optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
+    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
     #oil_train, stock_train, oil_test, stock_test = inputs
 
-    hm_epochs = 5
     oil_train, stock_train, oil_test, stock_test = refine_input_with_lag(oil_train, stock_train, oil_test, stock_test)
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         #Running neural net
-        for epoch in range(hm_epochs):
+        for epoch in range(hm_epoch):
             epoch_loss = 0
             for index in range(int(len(oil_train.values) / total_chunk_size)):
                 x_in = oil_train.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
                 y_in = stock_train.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
                 _, c = sess.run([optimizer, cost], feed_dict={x: x_in, y: y_in})
                 epoch_loss += c
-            print('Epoch', epoch, 'completed out of', hm_epochs, 'loss:', epoch_loss)
+            print('Epoch', epoch, 'completed out of', hm_epoch, 'loss:', epoch_loss)
         correct = tf.reduce_mean(tf.square(tf.subtract(prediction, y)))
         total = 0
         cor = 0
@@ -97,16 +96,19 @@ def recurrent_neural_network(inputs):
         save_path = saver.save(sess, "data/model/recurrent/recurrent.ckpt")
         print("Model saved in file: %s" % save_path)
 
+        date_labels = oil_price.index
+        date_labels = matplotlib.dates.date2num(date_labels.to_pydatetime())[:-4]
+
         predictions = []
         for index in range(int(len(oil_price.values) / total_chunk_size)):
             x_in = oil_price.values[index * total_chunk_size:index * total_chunk_size + total_chunk_size].reshape((1, n_chunks, chunk_size))
             predictions += sess.run(prediction, feed_dict={x: x_in})[0].reshape(total_chunk_size).tolist()
-        plt.plot(oil_price.values, label='Oil Prices')
-        plt.plot(stock_price.values, label='Stock Prices')
-        plt.plot(predictions, label="Predictions")
+        print(len(predictions), len(date_labels))
+        plt.plot_date(date_labels, predictions, 'b-', label="RNN Predictions")
+        plt.plot_date(date_labels, stock_price.values[:-4], 'r-', label='Stock Prices')
         plt.legend()
         plt.ylabel('Price')
-        plt.xlabel('Date')
+        plt.xlabel('Year')
         plt.show()
 
 
