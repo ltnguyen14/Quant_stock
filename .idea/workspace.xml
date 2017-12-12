@@ -2,21 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3f5617b9-5f3c-4683-b9c6-a535f225cf4c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts/constants.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/feedforward/feedforward.ckpt.data-00000-of-00001" afterPath="$PROJECT_DIR$/data/model/feedforward/feedforward.ckpt.data-00000-of-00001" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/feedforward/feedforward.ckpt.index" afterPath="$PROJECT_DIR$/data/model/feedforward/feedforward.ckpt.index" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/feedforward/feedforward.ckpt.meta" afterPath="$PROJECT_DIR$/data/model/feedforward/feedforward.ckpt.meta" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/recurrent/recurrent.ckpt.data-00000-of-00001" afterPath="$PROJECT_DIR$/data/model/recurrent/recurrent.ckpt.data-00000-of-00001" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/recurrent/recurrent.ckpt.index" afterPath="$PROJECT_DIR$/data/model/recurrent/recurrent.ckpt.index" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/recurrent/recurrent.ckpt.meta" afterPath="$PROJECT_DIR$/data/model/recurrent/recurrent.ckpt.meta" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/lag.p" afterPath="$PROJECT_DIR$/data/lag.p" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/model/feedforward/checkpoint" afterPath="$PROJECT_DIR$/data/model/feedforward/checkpoint" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/misc/arg_handler.py" afterPath="$PROJECT_DIR$/misc/arg_handler.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/misc/graph.py" afterPath="$PROJECT_DIR$/misc/graph.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/ConvNet.py" afterPath="$PROJECT_DIR$/scripts/ConvNet.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/feedforward_nn.py" afterPath="$PROJECT_DIR$/scripts/feedforward_nn.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/recurrent_lstm.py" afterPath="$PROJECT_DIR$/scripts/recurrent_lstm.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/constants.py" afterPath="$PROJECT_DIR$/scripts/constants.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -44,8 +36,8 @@
       <file leaf-file-name="arg_handler.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/misc/arg_handler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="747">
-              <caret line="50" column="47" lean-forward="true" selection-start-line="50" selection-start-column="47" selection-end-line="50" selection-end-column="47" />
+            <state relative-caret-position="1012">
+              <caret line="50" column="47" lean-forward="false" selection-start-line="50" selection-start-column="47" selection-end-line="50" selection-end-column="47" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -69,8 +61,8 @@
       <file leaf-file-name="ff_strat.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pipeline/strategies/ff_strat.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="55" column="41" lean-forward="true" selection-start-line="55" selection-start-column="41" selection-end-line="55" selection-end-column="41" />
+            <state relative-caret-position="1173">
+              <caret line="55" column="41" lean-forward="false" selection-start-line="55" selection-start-column="41" selection-end-line="55" selection-end-column="41" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -78,23 +70,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ConvNet.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ConvNet.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/ConvNet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="931">
-              <caret line="136" column="24" lean-forward="false" selection-start-line="136" selection-start-column="24" selection-end-line="136" selection-end-column="24" />
-              <folding>
-                <element signature="e#0#38#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="feedforward_nn.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/feedforward_nn.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="333">
-              <caret line="99" column="52" lean-forward="true" selection-start-line="99" selection-start-column="52" selection-end-line="99" selection-end-column="52" />
+            <state relative-caret-position="816">
+              <caret line="49" column="34" lean-forward="false" selection-start-line="49" selection-start-column="34" selection-end-line="49" selection-end-column="34" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -105,8 +85,8 @@
       <file leaf-file-name="recurrent_lstm.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/recurrent_lstm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="540">
-              <caret line="107" column="57" lean-forward="false" selection-start-line="107" selection-start-column="57" selection-end-line="107" selection-end-column="57" />
+            <state relative-caret-position="2162">
+              <caret line="100" column="0" lean-forward="false" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -114,11 +94,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="constants.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="feedforward_nn.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/feedforward_nn.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2162">
+              <caret line="99" column="52" lean-forward="false" selection-start-line="99" selection-start-column="52" selection-end-line="99" selection-end-column="52" />
+              <folding>
+                <element signature="e#0#38#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="constants.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/constants.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="46">
-              <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+            <state relative-caret-position="0">
+              <caret line="0" column="12" lean-forward="false" selection-start-line="0" selection-start-column="12" selection-end-line="0" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -127,7 +119,7 @@
       <file leaf-file-name="graph.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/misc/graph.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="724">
+            <state relative-caret-position="1012">
               <caret line="47" column="20" lean-forward="false" selection-start-line="47" selection-start-column="20" selection-end-line="47" selection-end-column="20" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
@@ -139,8 +131,8 @@
       <file leaf-file-name="data_process.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/data_process.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="529">
-              <caret line="26" column="67" lean-forward="true" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
+            <state relative-caret-position="552">
+              <caret line="26" column="67" lean-forward="false" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -178,8 +170,8 @@
         <option value="$PROJECT_DIR$/misc/arg_handler.py" />
         <option value="$PROJECT_DIR$/misc/graph.py" />
         <option value="$PROJECT_DIR$/scripts/feedforward_nn.py" />
-        <option value="$PROJECT_DIR$/scripts/ConvNet.py" />
         <option value="$PROJECT_DIR$/scripts/recurrent_lstm.py" />
+        <option value="$PROJECT_DIR$/scripts/ConvNet.py" />
         <option value="$PROJECT_DIR$/scripts/constants.py" />
       </list>
     </option>
@@ -211,7 +203,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -254,7 +246,7 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -869,14 +861,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="368">
           <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/data_process.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="529">
-          <caret line="26" column="67" lean-forward="true" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
+        <state relative-caret-position="552">
+          <caret line="26" column="67" lean-forward="false" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
@@ -887,7 +878,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-84456">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -904,8 +894,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/misc/arg_handler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="747">
-          <caret line="50" column="47" lean-forward="true" selection-start-line="50" selection-start-column="47" selection-end-line="50" selection-end-column="47" />
+        <state relative-caret-position="1012">
+          <caret line="50" column="47" lean-forward="false" selection-start-line="50" selection-start-column="47" selection-end-line="50" selection-end-column="47" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
@@ -914,8 +904,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pipeline/strategies/ff_strat.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="55" column="41" lean-forward="true" selection-start-line="55" selection-start-column="41" selection-end-line="55" selection-end-column="41" />
+        <state relative-caret-position="1173">
+          <caret line="55" column="41" lean-forward="false" selection-start-line="55" selection-start-column="41" selection-end-line="55" selection-end-column="41" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
@@ -924,7 +914,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/misc/graph.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="724">
+        <state relative-caret-position="1012">
           <caret line="47" column="20" lean-forward="false" selection-start-line="47" selection-start-column="20" selection-end-line="47" selection-end-column="20" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
@@ -932,20 +922,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/recurrent_lstm.py">
+    <entry file="file://$PROJECT_DIR$/scripts/feedforward_nn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="107" column="57" lean-forward="false" selection-start-line="107" selection-start-column="57" selection-end-line="107" selection-end-column="57" />
+        <state relative-caret-position="2162">
+          <caret line="99" column="52" lean-forward="false" selection-start-line="99" selection-start-column="52" selection-end-line="99" selection-end-column="52" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/feedforward_nn.py">
+    <entry file="file://$PROJECT_DIR$/scripts/recurrent_lstm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="333">
-          <caret line="99" column="52" lean-forward="true" selection-start-line="99" selection-start-column="52" selection-end-line="99" selection-end-column="52" />
+        <state relative-caret-position="2162">
+          <caret line="100" column="0" lean-forward="false" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/ConvNet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="816">
+          <caret line="49" column="34" lean-forward="false" selection-start-line="49" selection-start-column="34" selection-end-line="49" selection-end-column="34" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
           </folding>
@@ -954,19 +954,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/constants.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="46">
-          <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        <state relative-caret-position="0">
+          <caret line="0" column="12" lean-forward="false" selection-start-line="0" selection-start-column="12" selection-end-line="0" selection-end-column="12" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/ConvNet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="931">
-          <caret line="136" column="24" lean-forward="false" selection-start-line="136" selection-start-column="24" selection-end-line="136" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>

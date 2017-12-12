@@ -2,6 +2,7 @@ from scripts import data_process as dp
 from scripts.constants import *
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 import pickle
 
@@ -130,8 +131,12 @@ def conv_neural_network(inputs):
                     oil_price.values[index * input_size[0]:index * input_size[0] + input_size[0]]):
                 x_in[int(value), index_in, 0, 0] = 1
             predictions += sess.run(prediction, feed_dict={x: x_in})[0].tolist()
-        plt.plot(predictions, label=" ConvNet Predictions")
-        plt.plot(stock_price.values, label='Stock Prices')
+
+        date_labels = oil_price.index
+        date_labels = matplotlib.dates.date2num(date_labels.to_pydatetime())[:-14]
+
+        plt.plot_date(date_labels, predictions, 'b-', label="RNN Predictions")
+        plt.plot_date(date_labels, stock_price.values[:-14], 'r-', label='Stock Prices')
         plt.legend()
         plt.ylabel('Price')
         plt.xlabel('Year')
